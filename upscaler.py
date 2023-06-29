@@ -1,29 +1,32 @@
-from PIL import Image, ImageDraw, ImageFont
-
-
+from PIL import Image
+import numpy as np
+from time import time
 def scaleImage():
     for i in range(h):
         for j in range(w):
-            m, n = i * scale, j * scale
-            for dx in range(scale):
-                for dy in range(scale):
-                    uPixels[m + dx, n + dy] = pixels[j, i]
+            u_pixels[i * scale:(i + 1) * scale, j * scale:(j + 1) * scale] = pixels[i, j]
 
 def fillBlack():
-    for i in range(h*scale):
-        for j in range(w*scale):
-            if uPixels[i,j]==(0,0,0):
-                uPixels[i,j]=(255,255,255)
+    black_pixels = np.all(u_pixels == (0, 0, 0), axis=2)
+    u_pixels[black_pixels] = (255, 255, 255)
 
-
-if __name__=="__main__":
-    img = Image.open("sample.png")
-    w, h=img.size
-    pixels = img.load()
-    scale=16
-    upscaledImg=Image.new(mode="RGB", size=(w*scale, h*scale))
-    uPixels=upscaledImg.load()
+if __name__ == "__main__":
+    start=time()
+    img = Image.open("pexels.jpg")
+    w, h = img.size
+    pixels = np.array(img)
+    print("Time taken to load image of size {}x{}: {} seconds".format(h,w,time()-start))
+    start=time()
+    scale = 3
+    upscaled_img = Image.new(mode="RGB", size=(w * scale, h * scale))
+    u_pixels = np.array(upscaled_img)
+    print("Time taken to create new image of size {}x{}: {} seconds".format(h*scale,h*scale,time()-start))
+    start=time()
     scaleImage()
+    print("Time taken to scale image {} times: {} seconds".format(scale,time()-start))
+    start=time()
     fillBlack()
-    upscaledImg.save("upscaled{}x.png".format(scale))
+    print("Time taken to fill black: {} seconds".format(time()-start))
 
+    upscaled_img = Image.fromarray(u_pixels)
+    upscaled_img.save("upscaled{}x.jpg".format(scale))
