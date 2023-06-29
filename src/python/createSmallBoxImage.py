@@ -2,8 +2,8 @@ from PIL import Image, ImageDraw, ImageFont
 import sys
 # creating a image object (new image object) with
 # RGB mode and size 200x200
-w=200
-h=200
+w=4
+h=4
 img = Image.new(mode="RGB", size=(w,h))
 pixels = img.load()
 for i in range(w):
